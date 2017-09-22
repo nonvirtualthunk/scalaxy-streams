@@ -4,7 +4,9 @@ organization := "com.nativelibs4java"
 
 version := "0.4-SNAPSHOT"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.12.3"
+
+crossScalaVersions := Seq("2.12.3")
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
@@ -13,7 +15,7 @@ libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-compiler" % _)
 libraryDependencies <+= scalaVersion("org.scala-lang" % "scala-reflect" % _)
 
 libraryDependencies ++= Seq(
-  "org.scala-js" %% "scalajs-library" % "0.6.5" % "test",
+  "org.scala-js" %% "scalajs-library" % "0.6.19" % "test",
   "junit" % "junit" % "4.12" % "test",
   "com.novocode" % "junit-interface" % "0.11" % "test"
 )
@@ -31,8 +33,7 @@ javaOptions += "-Xmx4G"
 scalacOptions ++= Seq(
   "-encoding", "UTF-8",
   "-deprecation", "-feature", "-unchecked",
-  "-optimise", "-Yclosure-elim", "-Yinline",
-  "-YclasspathImpl:flat",
+  "-optimise",
   "-Xlog-free-types"
 )
 
@@ -81,18 +82,4 @@ pomIncludeRepository := { _ => false }
 
 publishMavenStyle := true
 
-publishTo <<= version { (v: String) =>
-  val nexus = "https://oss.sonatype.org/"
-  if (v.trim.endsWith("-SNAPSHOT"))
-    Some("snapshots" at nexus + "content/repositories/snapshots")
-  else
-    Some("releases"  at nexus + "service/local/staging/deploy/maven2")
-}
-
-credentials ++= (for {
-  username <- Option(System.getenv("SONATYPE_USERNAME"));
-  password <- Option(System.getenv("SONATYPE_PASSWORD"))
-} yield Credentials(
-  "Sonatype Nexus Repository Manager",
-  "oss.sonatype.org", username, password
-)).toSeq
+publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
